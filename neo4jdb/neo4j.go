@@ -4,6 +4,7 @@ import (
 	"audit-cluster/settings"
 
 	"github.com/neo4j/neo4j-go-driver/neo4j"
+	"go.uber.org/zap"
 )
 
 var driver neo4j.Driver
@@ -21,6 +22,8 @@ func Init(config *settings.Neo4jConfig) (err error) {
 	if err != nil {
 		return err
 	}
+
+	zap.L().Info("Init neo4j success")
 
 	return
 }
