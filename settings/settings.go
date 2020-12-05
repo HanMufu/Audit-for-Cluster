@@ -14,7 +14,7 @@ type AppConfig struct {
 	Mode    string `mapstructure:"mode"`
 	Version string `mapstructure:"version"`
 	Name    string `mapstructure:"name"`
-	// *LogConfig   `mapstructure:"log"`
+	*LogConfig   `mapstructure:"log"`
 	*Neo4jConfig `mapstructure:"neo4j"`
 }
 
@@ -24,13 +24,13 @@ type Neo4jConfig struct {
 	Password string `mapstructure:"password"`
 }
 
-// type LogConfig struct {
-// 	Level      string `mapstructure:"level"`
-// 	Filename   string `mapstructure:"filename"`
-// 	MaxSize    int    `mapstructure:"max_size"`
-// 	MaxAge     int    `mapstructure:"max_age"`
-// 	MaxBackups int    `mapstructure:"max_backups"`
-// }
+type LogConfig struct {
+	Level      string `mapstructure:"level"`
+	Filename   string `mapstructure:"filename"`
+	MaxSize    int    `mapstructure:"max_size"`
+	MaxAge     int    `mapstructure:"max_age"`
+	MaxBackups int    `mapstructure:"max_backups"`
+}
 
 func Init() (err error) {
 	viper.SetConfigFile("./conf/config.yaml")

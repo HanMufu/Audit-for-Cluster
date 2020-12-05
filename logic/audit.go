@@ -34,6 +34,7 @@ import (
 	"github.com/pkg/errors"
 
 	"audit-cluster/settings"
+	"audit-cluster/neo4jdb"
 )
 
 var (
@@ -148,8 +149,8 @@ func receive(r *libaudit.AuditClient) error {
 			continue
 		}
 
-		fmt.Printf("type=%v msg=%v\n", rawEvent.Type, string(rawEvent.Data))
+		// fmt.Printf("type=%v msg=%v\n", rawEvent.Type, string(rawEvent.Data))
 		// store into neo4j
-
+		neo4jdb.InsertToDB(fmt.Sprintf("%v", rawEvent.Type), string(rawEvent.Data))
 	}
 }
