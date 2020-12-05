@@ -20,7 +20,7 @@
 // audit is an example that receives audit messages from the kernel and outputs
 // them to stdout. The output can be piped to the auparse example to format
 // and interpret the output.
-package main
+package logic
 
 import (
 	"flag"
@@ -29,10 +29,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/pkg/errors"
-
 	"github.com/elastic/go-libaudit/v2"
 	"github.com/elastic/go-libaudit/v2/auparse"
+	"github.com/pkg/errors"
+
+	"audit-cluster/settings"
 )
 
 var (
@@ -45,14 +46,19 @@ var (
 )
 
 func main() {
+	// 1. load config files
+	if err := settings.Init(); err != nil {
+		fmt.Printf("Init settings failed, err:%v\n", err)
+		return
+	}
 	fs.Parse(os.Args[1:])
 
-	if err := read(); err != nil {
+	if err := Read(); err != nil {
 		log.Fatalf("error: %v", err)
 	}
 }
 
-func read() error {
+func Read() error {
 	if os.Geteuid() != 0 {
 		return errors.New("you must be root to receive audit data")
 	}
@@ -143,5 +149,7 @@ func receive(r *libaudit.AuditClient) error {
 		}
 
 		fmt.Printf("type=%v msg=%v\n", rawEvent.Type, string(rawEvent.Data))
+		// store into neo4j
+
 	}
 }
