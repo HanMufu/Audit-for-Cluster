@@ -1,1 +1,1 @@
-Audit a cluster of servers, store data on a centralized neo4j database. 
+Audit System call for clusters, storing data on a centralized neo4j database. 
