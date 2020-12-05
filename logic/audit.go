@@ -36,7 +36,7 @@ var (
 // 	}
 // }
 
-func Read() error {
+func Read(machineID string) error {
 	if os.Geteuid() != 0 {
 		return errors.New("you must be root to receive audit data")
 	}
@@ -110,10 +110,10 @@ func Read() error {
 		}
 	}
 
-	return receive(client)
+	return receive(client, machineID)
 }
 
-func receive(r *libaudit.AuditClient) error {
+func receive(r *libaudit.AuditClient, machineID string) error {
 	for {
 		rawEvent, err := r.Receive(false)
 		if err != nil {
@@ -128,6 +128,6 @@ func receive(r *libaudit.AuditClient) error {
 
 		// fmt.Printf("type=%v msg=%v\n", rawEvent.Type, string(rawEvent.Data))
 		// store into neo4j
-		neo4jdb.InsertToDB(fmt.Sprintf("%v", rawEvent.Type), string(rawEvent.Data))
+		neo4jdb.InsertToDB(fmt.Sprintf("%v", rawEvent.Type), string(rawEvent.Data), machineID)
 	}
 }

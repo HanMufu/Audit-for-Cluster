@@ -11,6 +11,7 @@ import (
 	"audit-cluster/neo4jdb"
 	"audit-cluster/logger"
 	"go.uber.org/zap"
+	"github.com/denisbrodbeck/machineid"
 )
 
 var (
@@ -35,6 +36,12 @@ func main() {
 		fmt.Printf("Init neo4j failed, err:%v\n", err)
 		return
 	}
+	// Init machineID
+	machineID, err := machineid.ID()
+  if err != nil {
+    zap.L().Fatal("Cannot get machineID", zap.Error(err))
+	}
+	zap.L().Info("Got machineID. ", zap.Any("machineID", machineID))
 	// res, err := neo4jdb.TestConnection()
 	// if err != nil {
 	// 	fmt.Printf("Test connection to neo4j failed, err:%v\n", err)
@@ -43,7 +50,7 @@ func main() {
 	// zap.L().Info("Greetings from neo4j: ", zap.String("greeting", res))
 	defer neo4jdb.Close()
 	fs.Parse(os.Args[1:])
-	if err := logic.Read(); err != nil {
+	if err := logic.Read(machineID); err != nil {
 		log.Fatalf("error: %v", err)
 	}
 }
