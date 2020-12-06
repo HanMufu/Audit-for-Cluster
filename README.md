@@ -26,7 +26,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project is designed to collect audit data and store them in a centralized Graph Database. 
+Audit-for-Cluster is designed to collect auditing data from the kernel and store them in a centralized Graph Database. It received system call auditing from the kernel by using netlink sockets. 
 
 * It is developed with Go, super fast and safe
 * The audit data is stored in neo4j, easy to query
