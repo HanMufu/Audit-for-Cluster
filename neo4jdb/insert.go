@@ -7,8 +7,6 @@ import(
 	// "go.uber.org/zap"
 )
 
-var MachineID string
-
 /*
 SYSCALL
 audit(1607204155.092:2130707): arch=c000003e syscall=228 success=yes exit=0 a0=7 a1=7ffeaa82f500 a2=55a7c0776cf0 a3=0 items=0 ppid=1816 pid=1822 auid=1000 uid=1000 gid=1001 euid=1000 suid=1000 fsuid=1000 egid=1001 sgid=1001 fsgid=1001 tty=(none) ses=6 comm="sshd" exe="/usr/sbin/sshd" subj==unconfined key=(null)
@@ -52,7 +50,7 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 		tmp := strings.Split(subMsg, "=")
 		if(len(tmp) == 2) {
 			m[tmp[0]] = tmp[1]
-			fmt.Println(id, subMsg)
+			// fmt.Println(id, subMsg)
 			// fmt.Println(tmp[0], tmp[1])
 			// fmt.Println("map:", m)
 		}
