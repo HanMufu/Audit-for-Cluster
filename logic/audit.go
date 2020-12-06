@@ -23,19 +23,6 @@ var (
 	receiveOnly = fs.Bool("ro", false, "receive only using multicast, requires kernel 3.16+")
 )
 
-// func main() {
-// 	// 1. load config files
-// 	if err := settings.Init(); err != nil {
-// 		fmt.Printf("Init settings failed, err:%v\n", err)
-// 		return
-// 	}
-// 	fs.Parse(os.Args[1:])
-
-// 	if err := Read(); err != nil {
-// 		log.Fatalf("error: %v", err)
-// 	}
-// }
-
 func Read(machineID string) error {
 	if os.Geteuid() != 0 {
 		return errors.New("you must be root to receive audit data")
