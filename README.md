@@ -30,7 +30,7 @@ This project is designed to collect audit data and store them in a centralized G
 
 * It is developed with Go, super fast and safe
 * The audit data is stored in neo4j, easy to query
-* User can configure auditd with ```auditctl``` as usual and Auditd-for-Cluster can comly with changes seamlessly
+* User can configure auditd with ```auditctl``` as usual and Audit-for-Cluster can comly with changes seamlessly
 * Built within container(TODO)
 
 <!-- USAGE EXAMPLES -->
@@ -54,7 +54,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Mufu Han - [@HanMufu](https://twitter.com/HanMufu) - hanmufu@gmail.com
 
-Project Link: [https://github.com/HanMufu/Auditd-for-Cluster](https://github.com/HanMufu/Auditd-for-Cluster)
+Project Link: [https://github.com/HanMufu/Audit-for-Cluster](https://github.com/HanMufu/Audit-for-Cluster)
 
 
 
@@ -69,13 +69,13 @@ Project Link: [https://github.com/HanMufu/Auditd-for-Cluster](https://github.com
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/HanMufu/Auditd-for-Cluster.svg?style=for-the-badge
-[contributors-url]: https://github.com/HanMufu/Auditd-for-Cluster/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/HanMufu/Auditd-for-Cluster.svg?style=for-the-badge
-[forks-url]: https://github.com/HanMufu/Auditd-for-Cluster/network/members
-[stars-shield]: https://img.shields.io/github/stars/HanMufu/Auditd-for-Cluster.svg?style=for-the-badge
-[stars-url]: https://github.com/HanMufu/Auditd-for-Cluster/stargazers
-[license-shield]: https://img.shields.io/github/license/HanMufu/Auditd-for-Cluster.svg?style=for-the-badge
-[license-url]: https://github.com/HanMufu/Auditd-for-Cluster/blob/main/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/HanMufu/Audit-for-Cluster.svg?style=for-the-badge
+[contributors-url]: https://github.com/HanMufu/Audit-for-Cluster/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/HanMufu/Audit-for-Cluster.svg?style=for-the-badge
+[forks-url]: https://github.com/HanMufu/Audit-for-Cluster/network/members
+[stars-shield]: https://img.shields.io/github/stars/HanMufu/Audit-for-Cluster.svg?style=for-the-badge
+[stars-url]: https://github.com/HanMufu/Audit-for-Cluster/stargazers
+[license-shield]: https://img.shields.io/github/license/HanMufu/Audit-for-Cluster.svg?style=for-the-badge
+[license-url]: https://github.com/HanMufu/Audit-for-Cluster/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/mufuhan/
