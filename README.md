@@ -62,6 +62,10 @@ Project Link: [https://github.com/HanMufu/Audit-for-Cluster](https://github.com/
 ## Acknowledgements
 * [go-libaudit](https://github.com/elastic/go-libaudit)
 * [SPADE](https://github.com/ashish-gehani/SPADE)
+* [Ma, Shiqing, et al. "Kernel-supported cost-effective audit logging for causality tracking." 2018 {USENIX} Annual Technical Conference ({USENIX}{ATC} 18). 2018.](https://www.usenix.org/conference/atc18/presentation/ma-shiqing)
+* [Ma, Shiqing, et al. "Accurate, low cost and instrumentation-free security audit logging for windows." Proceedings of the 31st Annual Computer Security Applications Conference. 2015.](https://dl.acm.org/doi/abs/10.1145/2818000.2818039)
+* [Ma, Shiqing, Xiangyu Zhang, and Dongyan Xu. "Protracer: Towards Practical Provenance Tracing by Alternating Between Logging and Tainting." NDSS. 2016.](https://www.ndss-symposium.org/wp-content/uploads/2017/09/protracer-towards-practical-provenance-tracing-alternating-logging-tainting.pdf)
+* [Ma, Shiqing, et al. "{MPI}: Multiple perspective attack investigation with semantic aware execution partitioning." 26th {USENIX} Security Symposium ({USENIX} Security 17). 2017.](https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/ma)
 
 
 
