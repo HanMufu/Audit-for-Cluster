@@ -1,7 +1,6 @@
 package neo4jdb
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -45,8 +44,8 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 	if eventType != "SYSCALL" {
 		return
 	}
-	fmt.Println(eventType)
-	fmt.Println(msg)
+	// fmt.Println(eventType)
+	// fmt.Println(msg)
 	message := strings.Split(msg, " ")
 	m := make(map[string]string)
 	for id, subMsg := range message {
