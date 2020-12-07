@@ -67,8 +67,8 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 	registerProcess(m, machineID, "pid")
 	// Add parent process into DB if not existed
 	registerProcess(m, machineID, "ppid")
-	// Add parrent process into DB if not existed
-	// Add parent process edge
+	// Add an edge point to parent process
+	registerParentProcessEdge(m, machineID)
 	// _, err = session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 	// 	return findProcess(tx, m, machineID)
 	// })
@@ -97,7 +97,7 @@ func registerSYSCALL(m map[string]string, machineID string) (err error) {
 }
 
 func presistSYSCALL(tx neo4j.Transaction, m map[string]string, machineID string) (interface{}, error) {
-	zap.L().Info("presistProcess...")
+	zap.L().Info("presistSYSCALL...")
 	query := `CREATE (:SYSCALL { 
 		arch: $arch, 
 		pid: $pid,
@@ -185,6 +185,35 @@ func presistProcess(tx neo4j.Transaction, m map[string]string, machineID string,
 	});`
 	parameters := map[string]interface{}{
 		"pid":       m[whichProcess],
+		"machineID": machineID,
+	}
+	_, err := tx.Run(query, parameters)
+	return nil, err
+}
+
+func registerParentProcessEdge(m map[string]string, machineID string) (err error) {
+	session := driver.NewSession(neo4j.SessionConfig{
+		AccessMode: neo4j.AccessModeWrite,
+	})
+	defer func() {
+		err = session.Close()
+	}()
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return presistParentProcessEdge(tx, m, machineID)
+		}); err != nil {
+		zap.L().Debug("Add ParentProcessEdge failed. ", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func presistParentProcessEdge(tx neo4j.Transaction, m map[string]string, machineID string) (interface{}, error) {
+	zap.L().Info("presistParentProcessEdge...")
+	query := `MATCH (a:PROCESS),(b:PROCESS) where a.pid=$pid and b.pid=$ppid and a.machineID=$machineID and a.machineID=b.machineID MERGE (a)-[:FORK_FROM]->(b);`
+	parameters := map[string]interface{}{
+		"pid":       m["pid"],
+		"ppid":      m["ppid"],
 		"machineID": machineID,
 	}
 	_, err := tx.Run(query, parameters)
