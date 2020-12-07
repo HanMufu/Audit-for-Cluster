@@ -66,6 +66,11 @@ Project Link: [https://github.com/HanMufu/Audit-for-Cluster](https://github.com/
 * [Ma, Shiqing, et al. "Accurate, low cost and instrumentation-free security audit logging for windows." Proceedings of the 31st Annual Computer Security Applications Conference. 2015.](https://dl.acm.org/doi/abs/10.1145/2818000.2818039)
 * [Ma, Shiqing, Xiangyu Zhang, and Dongyan Xu. "Protracer: Towards Practical Provenance Tracing by Alternating Between Logging and Tainting." NDSS. 2016.](https://www.ndss-symposium.org/wp-content/uploads/2017/09/protracer-towards-practical-provenance-tracing-alternating-logging-tainting.pdf)
 * [Ma, Shiqing, et al. "{MPI}: Multiple perspective attack investigation with semantic aware execution partitioning." 26th {USENIX} Security Symposium ({USENIX} Security 17). 2017.](https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/ma)
+* [Getting started with Linux Audit, SHARE Association, YouTube](https://youtu.be/-BkUGPf0PeQ)
+* [golang-neo4j-realworld-example](https://github.com/neo4j-examples/golang-neo4j-realworld-example)
+* [Red Hat Enteriprise Linux, 7.6. UNDERSTANDING AUDIT LOG FILES](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files)
+* [Check whether a node exists, if not create](https://stackoverflow.com/questions/24015854/check-whether-a-node-exists-if-not-create)
+* [auditd-examples](https://github.com/EricGershman/auditd-examples)
 
 
 
