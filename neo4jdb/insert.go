@@ -67,11 +67,12 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 	registerProcess(m, machineID, "pid")
 	// Add parent process into DB if not existed
 	registerProcess(m, machineID, "ppid")
-	// Add an edge point to parent process
+	// Add an edge from process to parent process
 	registerParentProcessEdge(m, machineID)
-	// Add an edge point to user
+	// Add an edge from process to user
 	registerUserEdge(m, machineID)
-	// Add an edge point to group
+	// Add edges from SYSCALL to PID
+	registerSYSCALLEdge(m, machineID)
 	// registerGroupEdge(m, machineID)
 	return
 }
@@ -122,7 +123,7 @@ func presistSYSCALL(tx neo4j.Transaction, m map[string]string, machineID string)
 		exe: $exe,
 		key: $key, 
 		machineID: $machineID, 
-		auditTimeStamp: $audit
+		audit: $audit
 	});`
 	parameters := map[string]interface{}{
 		"arch":      m["acrh"],
@@ -255,6 +256,35 @@ func presistUserEdge(tx neo4j.Transaction, m map[string]string, machineID string
 	parameters := map[string]interface{}{
 		"pid":       m["pid"],
 		"uid":       m["uid"],
+		"machineID": machineID,
+	}
+	_, err := tx.Run(query, parameters)
+	return nil, err
+}
+
+func registerSYSCALLEdge(m map[string]string, machineID string) (err error) {
+	session := driver.NewSession(neo4j.SessionConfig{
+		AccessMode: neo4j.AccessModeWrite,
+	})
+	defer func() {
+		err = session.Close()
+	}()
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return presistSYSCALLEdge(tx, m, machineID)
+		}); err != nil {
+		zap.L().Debug("Add SYSCALLEdge failed. ", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func presistSYSCALLEdge(tx neo4j.Transaction, m map[string]string, machineID string) (interface{}, error) {
+	zap.L().Info("presistSYSCALLEdge...")
+	query := `MATCH (a:SYSCALL),(b:PROCESS) where a.audit=$audit and b.pid=$pid and a.machineID=$machineID and a.machineID=b.machineID MERGE (a)-[:CALLED_FROM]->(b);`
+	parameters := map[string]interface{}{
+		"pid":       m["pid"],
+		"audit":     m["audit"],
 		"machineID": machineID,
 	}
 	_, err := tx.Run(query, parameters)
