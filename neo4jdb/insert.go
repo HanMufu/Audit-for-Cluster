@@ -1,8 +1,11 @@
 package neo4jdb
 
-import(
+import (
 	"fmt"
 	"strings"
+
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"go.uber.org/zap"
 	// "github.com/neo4j/neo4j-go-driver/neo4j"
 	// "go.uber.org/zap"
 )
@@ -39,7 +42,7 @@ audit(1607204155.092:2130707): arch=c000003e syscall=228 success=yes exit=0 a0=7
 26 key=(null)
 */
 func InsertToDB(eventType string, msg string, machineID string) (err error) {
-	if(eventType != "SYSCALL") {
+	if eventType != "SYSCALL" {
 		return
 	}
 	fmt.Println(eventType)
@@ -47,24 +50,28 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 	message := strings.Split(msg, " ")
 	m := make(map[string]string)
 	for id, subMsg := range message {
+		if id == 0 {
+			m["audit"] = subMsg
+		}
 		tmp := strings.Split(subMsg, "=")
-		if(len(tmp) == 2) {
+		if len(tmp) == 2 {
 			m[tmp[0]] = tmp[1]
 			// fmt.Println(id, subMsg)
 			// fmt.Println(tmp[0], tmp[1])
 			// fmt.Println("map:", m)
 		}
 	}
-	// create a new database for this machine if not existed
-
-	// store this process into DB (adding vertex)
-
-	// if _, err := session.
-	// 	WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
-	// 		return u.persistUser(tx, user)
-	// 	}); err != nil {
-	// 	return err
-	// }
+	// Add current SYSCALL into DB
+	registerSYSCALL(m, machineID)
+	// Add current process into DB if not existed
+	registerProcess(m, machineID, "pid")
+	// Add parent process into DB if not existed
+	registerProcess(m, machineID, "ppid")
+	// Add parrent process into DB if not existed
+	// Add parent process edge
+	// _, err = session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+	// 	return findProcess(tx, m, machineID)
+	// })
 
 	// connect this process to parent process(ppid) (adding edge)
 	// connect this process to user who currently login(auid) (adding edge)
@@ -72,18 +79,114 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 	return
 }
 
-// func persistUser(tx neo4j.Transaction, user *User) (interface{}, error) {
-// 	query := "CREATE (:User {email: $email, username: $username, password: $password})"
-// 	hashedPassword, err := hash(user.Password)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	parameters := map[string]interface{}{
-// 		"email":    user.Email,
-// 		"username": user.Username,
-// 		"password": hashedPassword,
-// 	}
-// 	_, err = tx.Run(query, parameters)
-// 	return nil, err
-// }
+func registerSYSCALL(m map[string]string, machineID string) (err error) {
+	session := driver.NewSession(neo4j.SessionConfig{
+		AccessMode: neo4j.AccessModeWrite,
+	})
+	defer func() {
+		err = session.Close()
+	}()
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return presistSYSCALL(tx, m, machineID)
+		}); err != nil {
+		zap.L().Debug("Add SYSCALL failed. ", zap.Error(err))
+		return err
+	}
+	return nil
+}
 
+func presistSYSCALL(tx neo4j.Transaction, m map[string]string, machineID string) (interface{}, error) {
+	zap.L().Info("presistProcess...")
+	query := `CREATE (:SYSCALL { 
+		arch: $arch, 
+		pid: $pid,
+		syscall: $syscall,
+		succes: $succes,
+		exit: $exit,
+		a0: $a0,
+		a1: $a1,
+		a2: $a2,
+		a3: $a3,
+		items: $items,
+		ppid: $ppid,
+		auid: $auid,
+		uid: $uid,
+		gid: $gid,
+		euid: $euid,
+		suid: $suid,
+		fsuid: $fsuid,
+		egid: $egid,
+		sgid: $sgid,
+		fsgid: $fsgid,
+		tty: $tty,
+		ses: $ses,
+		comm: $comm,
+		exe: $exe,
+		key: $key, 
+		machineID: $machineID, 
+		auditTimeStamp: $audit
+	});`
+	parameters := map[string]interface{}{
+		"arch":      m["acrh"],
+		"pid":       m["pid"],
+		"syscall":   m["syscall"],
+		"succes":    m["succes"],
+		"exit":      m["exit"],
+		"a0":        m["a0"],
+		"a1":        m["a1"],
+		"a2":        m["a2"],
+		"a3":        m["a3"],
+		"items":     m["items"],
+		"ppid":      m["ppid"],
+		"auid":      m["auid"],
+		"uid":       m["uid"],
+		"gid":       m["gid"],
+		"euid":      m["euid"],
+		"suid":      m["suid"],
+		"fsuid":     m["fsuid"],
+		"egid":      m["egid"],
+		"sgid":      m["sgid"],
+		"fsgid":     m["fsgid"],
+		"tty":       m["tty"],
+		"ses":       m["ses"],
+		"comm":      m["comm"],
+		"exe":       m["exe"],
+		"key":       m["key"],
+		"machineID": machineID,
+		"audit":     m["audit"],
+	}
+	_, err := tx.Run(query, parameters)
+	return nil, err
+}
+
+func registerProcess(m map[string]string, machineID string, whichProcess string) (err error) {
+	session := driver.NewSession(neo4j.SessionConfig{
+		AccessMode: neo4j.AccessModeWrite,
+	})
+	defer func() {
+		err = session.Close()
+	}()
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return presistProcess(tx, m, machineID, whichProcess)
+		}); err != nil {
+		zap.L().Debug("Add Process failed. ", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func presistProcess(tx neo4j.Transaction, m map[string]string, machineID string, whichProcess string) (interface{}, error) {
+	zap.L().Info("presistProcess...")
+	query := `MERGE (:PROCESS { 
+		pid: $pid,
+		machineID: $machineID
+	});`
+	parameters := map[string]interface{}{
+		"pid":       m[whichProcess],
+		"machineID": machineID,
+	}
+	_, err := tx.Run(query, parameters)
+	return nil, err
+}

@@ -84,12 +84,12 @@ func Read(machineID string) error {
 			}
 		}
 
-		if status.Enabled != 2 {
-			log.Printf("setting kernel settings as immutable")
-			if err = client.SetImmutable(libaudit.NoWait); err != nil {
-				return errors.Wrap(err, "failed to set kernel as immutable")
-			}
-		}
+		// if status.Enabled != 2 {
+		// 	log.Printf("setting kernel settings as immutable")
+		// 	if err = client.SetImmutable(libaudit.NoWait); err != nil {
+		// 		return errors.Wrap(err, "failed to set kernel as immutable")
+		// 	}
+		// }
 
 		log.Printf("sending message to kernel registering our PID (%v) as the audit daemon", os.Getpid())
 		if err = client.SetPID(libaudit.NoWait); err != nil {
