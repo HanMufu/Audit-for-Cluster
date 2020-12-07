@@ -69,13 +69,10 @@ func InsertToDB(eventType string, msg string, machineID string) (err error) {
 	registerProcess(m, machineID, "ppid")
 	// Add an edge point to parent process
 	registerParentProcessEdge(m, machineID)
-	// _, err = session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
-	// 	return findProcess(tx, m, machineID)
-	// })
-
-	// connect this process to parent process(ppid) (adding edge)
-	// connect this process to user who currently login(auid) (adding edge)
-	// connect this process to current user group(gid) (adding edge)
+	// Add an edge point to user
+	registerUserEdge(m, machineID)
+	// Add an edge point to group
+	// registerGroupEdge(m, machineID)
 	return
 }
 
@@ -179,10 +176,7 @@ func registerProcess(m map[string]string, machineID string, whichProcess string)
 
 func presistProcess(tx neo4j.Transaction, m map[string]string, machineID string, whichProcess string) (interface{}, error) {
 	zap.L().Info("presistProcess...")
-	query := `MERGE (:PROCESS { 
-		pid: $pid,
-		machineID: $machineID
-	});`
+	query := `MERGE (:PROCESS { pid: $pid, machineID: $machineID });`
 	parameters := map[string]interface{}{
 		"pid":       m[whichProcess],
 		"machineID": machineID,
@@ -214,6 +208,53 @@ func presistParentProcessEdge(tx neo4j.Transaction, m map[string]string, machine
 	parameters := map[string]interface{}{
 		"pid":       m["pid"],
 		"ppid":      m["ppid"],
+		"machineID": machineID,
+	}
+	_, err := tx.Run(query, parameters)
+	return nil, err
+}
+
+func registerUserEdge(m map[string]string, machineID string) (err error) {
+	session := driver.NewSession(neo4j.SessionConfig{
+		AccessMode: neo4j.AccessModeWrite,
+	})
+	defer func() {
+		err = session.Close()
+	}()
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return presistUser(tx, m, machineID)
+		}); err != nil {
+		zap.L().Debug("Add User failed. ", zap.Error(err))
+		return err
+	}
+	if _, err := session.
+		WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+			return presistUserEdge(tx, m, machineID)
+		}); err != nil {
+		zap.L().Debug("Add UserEdge failed. ", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func presistUser(tx neo4j.Transaction, m map[string]string, machineID string) (interface{}, error) {
+	zap.L().Info("presistUser...")
+	query := `MERGE (:User { uid: $uid, machineID: $machineID });`
+	parameters := map[string]interface{}{
+		"uid":       m["uid"],
+		"machineID": machineID,
+	}
+	_, err := tx.Run(query, parameters)
+	return nil, err
+}
+
+func presistUserEdge(tx neo4j.Transaction, m map[string]string, machineID string) (interface{}, error) {
+	zap.L().Info("presistUserEdge...")
+	query := `MATCH (a:PROCESS),(b:User) where a.pid=$pid and b.uid=$uid and a.machineID=$machineID and a.machineID=b.machineID MERGE (a)-[:STARTED_BY]->(b);`
+	parameters := map[string]interface{}{
+		"pid":       m["pid"],
+		"uid":       m["uid"],
 		"machineID": machineID,
 	}
 	_, err := tx.Run(query, parameters)
