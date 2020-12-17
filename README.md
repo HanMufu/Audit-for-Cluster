@@ -26,20 +26,49 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Audit-for-Cluster is designed to collect auditing data from the kernel and store them in a centralized Graph Database. It received system call auditing from the kernel by using netlink sockets. 
+Audit-for-Cluster is designed to collect auditing data from the kernel and store them in a centralized Graph Database. It received system call auditing from the ```auditd``` with netlink sockets by using [go-libaudit](https://github.com/elastic/go-libaudit). 
 
-* It is developed with Go, super fast and safe
-* The audit data is stored in neo4j, easy to query
+* It is developed with Go
+* The audit data is stored in neo4j, easy to query, no need to join mutiple tables
 * User can configure auditd with ```auditctl``` as usual and Audit-for-Cluster can comly with changes seamlessly
-* Built within container(TODO)
+
+
+
+<p align=center><img src="https://github.com/HanMufu/Audit-for-Cluster/blob/main/Snipaste_2020-12-17_17-43-13.png?raw=true" width="650"/></p>
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Git clone this repo, add a conf/config.yaml file into your repo as following. 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+```
+mode: "release"
+version: v0.0.1
+name: "AuditdForCluster"
 
+neo4j:
+  host: "bolt://IP_ADDRESS:PORT"
+  user: "neo4j"
+  password: "PASSWORD"
+
+log:
+  level: "debug"
+  filename: "audit-cluster.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+```
+
+Use ```auditctl``` set your auditing rules. Run ```go run main.go``` and auditing data will flow into your neo4j database. 
+
+<p align=center><img src="https://github.com/HanMufu/Audit-for-Cluster/blob/main/Snipaste_2020-12-17_17-53-43.png?raw=true" width="700"/></p>
+
+
+## TODO
+
+In the future, if we have mutiple consumers we can use a Kafka in the middle to handle message forwarding for us. 
+
+<p align=center><img src="https://github.com/HanMufu/Audit-for-Cluster/blob/main/Snipaste_2020-12-17_17-39-19.png?raw=true" width="650"/></p>
 
 
 <!-- LICENSE -->
